@@ -33,8 +33,10 @@ snapshot_create() {
     done
 
     [[ -z "$vmid"     ]] && die "Option --vmid requise."
-    [[ -z "$snapname" ]] && snapname=$(prompt_value "Nom du snapshot" \
-        "snap_$(date '+%Y%m%d_%H%M%S')")
+    if [[ -z "$snapname" ]]; then
+        [[ ! -t 0 ]] && die "Nom du snapshot obligatoire (--name)."
+        snapname=$(prompt_value "Nom du snapshot" "snap_$(date '+%Y%m%d_%H%M%S')")
+    fi
     [[ -z "$snapname" ]] && die "Nom du snapshot obligatoire."
 
     vmid_exists "$vmid" || die "VMID $vmid introuvable."
@@ -176,10 +178,11 @@ snapshot_restore() {
     done
 
     [[ -z "$vmid"     ]] && die "Option --vmid requise."
-    [[ -z "$snapname" ]] && {
+    if [[ -z "$snapname" ]]; then
+        [[ ! -t 0 ]] && die "Nom du snapshot obligatoire (--name)."
         snapshot_list --vmid "$vmid"
         snapname=$(prompt_value "Nom du snapshot à restaurer")
-    }
+    fi
     [[ -z "$snapname" ]] && die "Nom du snapshot obligatoire."
 
     vmid_exists "$vmid" || die "VMID $vmid introuvable."
@@ -240,10 +243,11 @@ snapshot_delete() {
     done
 
     [[ -z "$vmid"     ]] && die "Option --vmid requise."
-    [[ -z "$snapname" ]] && {
+    if [[ -z "$snapname" ]]; then
+        [[ ! -t 0 ]] && die "Nom du snapshot obligatoire (--name)."
         snapshot_list --vmid "$vmid"
         snapname=$(prompt_value "Nom du snapshot à supprimer")
-    }
+    fi
     [[ -z "$snapname" ]] && die "Nom du snapshot obligatoire."
 
     vmid_exists "$vmid" || die "VMID $vmid introuvable."

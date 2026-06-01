@@ -52,10 +52,10 @@ delete_machine() {
     snap_list=$(_list_snapshots_delete "$vmid" "$type")
     if [[ -n "$snap_list" ]]; then
         log_warn "Cette machine possède des snapshots qui seront aussi supprimés :"
-        echo "$snap_list" | while read -r snap; do
+        while read -r snap; do
             [[ -z "$snap" ]] && continue
             echo -e "    ${C_YELLOW}• $snap${C_RESET}"
-        done
+        done < <(echo "$snap_list")
         echo ""
     fi
 
@@ -118,14 +118,14 @@ delete_machine() {
     # --- Étape 2 : Suppression des snapshots ---
     if [[ -n "$snap_list" ]]; then
         log_info "[2/3] Suppression des snapshots..."
-        echo "$snap_list" | while read -r snap; do
+        while read -r snap; do
             [[ -z "$snap" ]] && continue
             log_debug "  Suppression snapshot : $snap"
             case "$type" in
                 qemu) qm delsnapshot "$vmid" "$snap" 2>/dev/null || true ;;
                 lxc)  pct delsnapshot "$vmid" "$snap" 2>/dev/null || true ;;
             esac
-        done
+        done < <(echo "$snap_list")
         log_success "Snapshots supprimés."
     else
         log_info "[2/3] Aucun snapshot à supprimer."

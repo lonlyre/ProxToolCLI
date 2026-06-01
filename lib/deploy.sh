@@ -59,8 +59,14 @@ deploy_vm_from_template() {
     done
 
     # --- Validation des paramètres obligatoires ---
-    [[ -z "$name"     ]] && name=$(prompt_value "Nom de la VM")
-    [[ -z "$template" ]] && template=$(prompt_value "VMID du template source")
+    if [[ -z "$name" ]]; then
+        [[ ! -t 0 ]] && die "Le nom de la VM est obligatoire (--name)."
+        name=$(prompt_value "Nom de la VM")
+    fi
+    if [[ -z "$template" ]]; then
+        [[ ! -t 0 ]] && die "Le VMID du template est obligatoire (--template)."
+        template=$(prompt_value "VMID du template source")
+    fi
     [[ -z "$name"     ]] && die "Le nom de la VM est obligatoire."
     [[ -z "$template" ]] && die "Le VMID du template est obligatoire."
 
@@ -93,7 +99,7 @@ deploy_vm_from_template() {
     log_info "Paramètres du déploiement :"
     echo -e "  ${C_BOLD}VMID      :${C_RESET} $vmid"
     echo -e "  ${C_BOLD}Nom       :${C_RESET} $name"
-    echo -e "  ${C_BOLD}Template  :${C_RESET} $vmid_template → $template"
+    echo -e "  ${C_BOLD}Template  :${C_RESET} Template VMID → $template"
     echo -e "  ${C_BOLD}CPU       :${C_RESET} $cpu vCPU"
     echo -e "  ${C_BOLD}RAM       :${C_RESET} $(format_mem "$ram")"
     echo -e "  ${C_BOLD}Disque    :${C_RESET} ${disk} Go sur $storage"
@@ -204,8 +210,14 @@ deploy_vm_from_iso() {
     done
 
     # Valeurs obligatoires
-    [[ -z "$name" ]] && name=$(prompt_value "Nom de la VM")
-    [[ -z "$iso"  ]] && iso=$(prompt_value "Chemin ISO (ex: local:iso/debian-12.iso)")
+    if [[ -z "$name" ]]; then
+        [[ ! -t 0 ]] && die "Nom obligatoire (--name)."
+        name=$(prompt_value "Nom de la VM")
+    fi
+    if [[ -z "$iso" ]]; then
+        [[ ! -t 0 ]] && die "ISO obligatoire (--iso)."
+        iso=$(prompt_value "Chemin ISO (ex: local:iso/debian-12.iso)")
+    fi
     [[ -z "$name" ]] && die "Nom obligatoire."
     [[ -z "$iso"  ]] && die "ISO obligatoire."
 
@@ -318,8 +330,14 @@ deploy_lxc() {
     done
 
     # Valeurs obligatoires
-    [[ -z "$name"     ]] && name=$(prompt_value "Hostname du conteneur")
-    [[ -z "$template" ]] && template=$(prompt_value "Template LXC")
+    if [[ -z "$name" ]]; then
+        [[ ! -t 0 ]] && die "Hostname obligatoire (--name)."
+        name=$(prompt_value "Hostname du conteneur")
+    fi
+    if [[ -z "$template" ]]; then
+        [[ ! -t 0 ]] && die "Template obligatoire (--template)."
+        template=$(prompt_value "Template LXC")
+    fi
     [[ -z "$name"     ]] && die "Hostname obligatoire."
     [[ -z "$template" ]] && die "Template obligatoire."
 
